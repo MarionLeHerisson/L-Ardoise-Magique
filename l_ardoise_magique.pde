@@ -1,3 +1,5 @@
+// TODO : use array containing key to simulate multi input
+
 int win_w = 800;    // window width 
 int win_h = 800;    // window height
 
@@ -7,62 +9,58 @@ int lvl = 0;        // current drawing level
 
 int x = 0, y = 0;    // cursor coordonates
 
-String[] tab = new String[3];
+boolean[] CKEYS;
 
 void setup() {
   size(800, 800);  // window size
   //background(0,0,0);
+  fill(0);
+  textSize(20);
+  CKEYS = new boolean[255];
 }
 
 void draw() {
-  strokeWeight(4);
-  stroke(250,250,250);
-  
-  play();
+  //println("Left:" + CKEYS[LEFT] + "   Right:" + CKEYS[RIGHT] + "   Up:" + CKEYS[UP] + "   Down:" + CKEYS[DOWN], 0 ,(height>>1)-20);
+  //println("Left + Up:" + (CKEYS[LEFT] && CKEYS[UP]) , 0 ,(height>>1)+20);
+  draw_lines();
 }
 
-void play() {
+void draw_lines() {
+  
+  // Player 1
+  if(CKEYS[RIGHT] && x < win_w) {
+    x++;
+  }
+  else if(CKEYS[LEFT] && x > 0) {
+    x--;
+  }
+  
+  // Player 2
+  if(CKEYS[UP] && y > 0) {
+    y--;
+  }
+  else if(CKEYS[DOWN] && y < win_h) {
+    y++;
+  }
+    
+  switch(key) {        
+    case 'q' :
+      exit();
+      break;
+  }
+  
+  strokeWeight(4);
   point(x,y);
 }
 
-void keyPressed() {
-  
-  if(key == CODED) {
-    switch(keyCode) {
-      // Player 1
-      case RIGHT :
-        println("RIGHT x = "+x);
-        if(x < win_w) {
-          x++;
-        }
-        break;
-      case LEFT :
-        println("LEFT");
-        if(x > 0) {
-          x--;
-        }
-        break;
-        
-      // Player 2   
-      case UP :
-        println("UP");
-        if(y > 0) {
-          y--;
-        }
-        break;
-      case DOWN :
-        println("DOWN");
-        if(y < win_h) {
-          y++;
-        }
-        break;
-    } 
-  } 
-  else {
-    switch(key) {        
-      case 'q' :
-        exit();
-        break;
-    }
+public void keyPressed() {
+  if (key == CODED && keyCode < 255) {
+    CKEYS[keyCode] = true;
+  }
+}
+
+public void keyReleased() {
+  if (key == CODED && keyCode < 255) {
+    CKEYS[keyCode] = false;
   }
 }

@@ -43,9 +43,6 @@ void draw() {
 void game_state() {
   switch(state) {
     case 1 :
-      // background rouge
-      // afficher perdu
-      // pause 5 secondes
       break;
     case 2 :
       lvl++;
@@ -112,17 +109,20 @@ void draw_level() {
     case 0:
       x = 100;
       y = 100;
-      line(100, 100, 400, 400);
       
-      stroke(-10197916);
+      line(100, 100, 200, 200);
+      
+      stroke(-3643901);
       strokeWeight(15);
-      point(400,400);
+      point(200,200);
       break;
       
     // maison
     case 1:
-      x = 500;
+      x = 100;
       y = 500;
+      background(0);
+      
       line(100, 500, 700, 500);  // 1
       line(100, 500, 700, 200);  // 2
       line(100, 200, 700, 500);  // 3
@@ -132,7 +132,7 @@ void draw_level() {
       line(100, 200, 400, 100);  // 7
       line(400, 100, 700, 200);  // 8
       
-      stroke(-10197916);
+      stroke(-3643901);
       strokeWeight(15);
       point(700, 200);
       break;
@@ -152,6 +152,18 @@ void verif_pixel() {
 
   println(myColor);
   
+  if(myColor == -3643901) {
+    // timeout
+    // msg bravo
+    state = 2;  // gagné
+    // fill background
+  }
+  else if(myColor != 100 && myColor != 255) {
+    state = 1; // perdu
+    // background rouge
+    // afficher perdu
+    // pause 5 secondes
+  }
 }
 
 

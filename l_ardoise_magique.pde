@@ -4,7 +4,8 @@ int win_w = 800;    // window width
 int win_h = 800;    // window height
 
 int score = 0;
-int lvl = 0;        // current drawing level
+int state = 0;      // 0 = playing, 1 = win, 2 = loose
+int lvl;            // current drawing level
 Boolean delay = false;
 Boolean drawlvl = true;
 
@@ -14,8 +15,6 @@ int x = 4, y = 4;    // cursor coordonates
 
 boolean[] CKEYS;
 color orange, background, bsod, pattern, players;
-
-color tmp = 0;
 
 void setup() {
   size(800, 800);  // window size
@@ -37,6 +36,14 @@ void draw() {
   get_input();
   verif_pixel();
   draw_players();
+}
+
+
+/*********************/
+/*  MENU FUNCTIONS   */
+/*********************/
+void menu() {
+  
 }
 
 void restart() {
@@ -79,12 +86,6 @@ void get_input() {
   }
 }
 
-void draw_players() {
-  stroke(players);  // Players cursor 
-  strokeWeight(1);
-  point(x,y);
-}
-
 public void keyPressed() {
   if (key == CODED && keyCode < 255) {
     CKEYS[keyCode] = true;
@@ -99,12 +100,27 @@ public void keyReleased() {
 
 
 /*********************/
-/*   LVL FUNCTIONS   */
+/* DRAWING FUNCTIONS */
 /*********************/
+
+void draw_players() {
+  stroke(players);  // Players cursor 
+  strokeWeight(1);
+  point(x,y);
+}
+
+void draw_arrival(int x_arr, int y_arr) {  
+      stroke(orange);
+      strokeWeight(25);
+      point(x_arr, y_arr);
+}
+
 void draw_level() {
   println("draw lvl");
-  stroke(100);
+  stroke(pattern);
   strokeWeight(20);
+  
+  background(background);
   
   switch(lvl) {
     // diagonal
@@ -113,18 +129,14 @@ void draw_level() {
       y = 100;
       
       line(100, 100, 200, 200);
-      
-      stroke(-3643901);
-      strokeWeight(25);
-      point(200,200);
+
+      draw_arrival(200,200);
       break;
       
     // "house"
     case 1:
       x = 100;
       y = 500;
-      
-      background(0);
       
       line(100, 500, 700, 500);  // 1
       line(100, 500, 700, 200);  // 2
@@ -135,55 +147,59 @@ void draw_level() {
       line(100, 200, 400, 100);  // 7
       line(400, 100, 700, 200);  // 8
       
-      stroke(-3643901);
-      strokeWeight(15);
-      point(700, 200);
+      draw_arrival(700, 200);
       break;
       
     // circle
     case 2 : 
+      x = 300;
+      y = 200;
+      
+      ellipse(300, 300, 100, 100);
+      
+      stroke(background);
+      strokeWeight(3);
+      point(297,203);
+      
+      draw_arrival(290,210);
       break;
     // infinite
     case 3 :
+      bezier(x, y, 350, 215, 350, 385, x, y);
+      
+      //draw_arrival(300, 300);
       break;
   }
   
   drawlvl = false;
 }
 
+
+/*********************/
+/*  GAME FUNCTIONS   */
+/*********************/
+
 void verif_pixel() {
   
   color myColor = get(x,y);
   
-  if(tmp != myColor) {
-    tmp = myColor;
-    println("x = "+x);
-    println("y = "+y);
-    println("myColor = "+myColor);
-  }
-  
-  if(myColor == orange) {  // win
+  if(myColor == orange && state == 0) {  // win
     println("GAGNE");
+    
     lvl++;
-    
-    textFont(font, 25);
-    fill(255);
-    text("Lvl "+lvl+" complete !", 100,100);
-    text("Press any key to continue", 100,150);
-    
-    drawlvl = true;
+    draw_level();
   }
   else if(myColor == background) {  // loose
     println("PERDU");
+    restart();
     
-    background(0, 0, 130);
+/*    background(0, 0, 130);
     
     textFont(font, 25);
     fill(255);
     text("Game over", 100, 100);
     text("Please wait, system will restart.", 100, 150);
     text("Press any key to continue", 100, 200);
-    
-    drawlvl = true;
+*/    
   }
 }

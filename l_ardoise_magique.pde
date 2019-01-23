@@ -1,62 +1,56 @@
-// TODO : use array containing key to simulate multi input
+// TODO : verif couleur via variable type color
 
 int win_w = 800;    // window width 
 int win_h = 800;    // window height
 
 int score = 0;
-int state = 0;      // game state (0 = en cours, 1 = perdu, 2 = gagné)
 int lvl = 0;        // current drawing level
+Boolean delay = false;
+Boolean drawlvl = true;
+
+PFont font;
 
 int x = 4, y = 4;    // cursor coordonates
 
 boolean[] CKEYS;
+color orange, background, bsod, pattern, players;
 
-color b1,b2,c1,c2;
-int Y_AXIS = 1;
-int X_AXIS = 2;
+color tmp = 0;
 
 void setup() {
   size(800, 800);  // window size
-  
-  b1 = color(255);
-  b2 = color(0);
-  c1 = color(204, 102, 0);
-  c2 = color(0, 102, 153);
-  
-  // Background
-  setGradient(0, 0, width/2, height, c1, c2, X_AXIS);
-  setGradient(width/2, 0, width/2, height, b2, b1, X_AXIS);
-  
   CKEYS = new boolean[255];
   
+  font = createFont("Source Code Pro", 16, true);
+  
+  noSmooth();
+  orange     = color(-3643901);
+  background = color(-3355444);
+  bsod       = color(-16777086);
+  pattern    = color(-10197916);
+  players    = color(-3145624);
+  
+  restart();
+}
+
+void draw() {  
+  get_input();
+  verif_pixel();
+  draw_players();
+}
+
+void restart() {
+  println("restart");
+  lvl = 0;
   draw_level();
 }
 
-void draw() {
-  //println("Left:" + CKEYS[LEFT] + "   Right:" + CKEYS[RIGHT] + "   Up:" + CKEYS[UP] + "   Down:" + CKEYS[DOWN], 0 ,(height>>1)-20);
-  //println("Left + Up:" + (CKEYS[LEFT] && CKEYS[UP]) , 0 ,(height>>1)+20);
-  verif_pixel();
-  draw_players();
-  game_state();
-}
-
-void game_state() {
-  switch(state) {
-    case 1 :
-      break;
-    case 2 :
-      lvl++;
-      draw_level();
-      break;
-  }
-}
 
 /*********************/
 /*   KEY FUNCTIONS   */
 /*********************/
 
-void draw_players() {
-  
+void get_input() {
   // Player 1
   if(CKEYS[RIGHT] && x < win_w -5) {
     x++;
@@ -77,10 +71,17 @@ void draw_players() {
     case 'q' :
       exit();
       break;
+    case 'r' :
+      restart();
+      break;
+    case CODED :
+      break;
   }
-  
-  stroke(255);
-  strokeWeight(4);
+}
+
+void draw_players() {
+  stroke(players);  // Players cursor 
+  strokeWeight(1);
   point(x,y);
 }
 
@@ -101,11 +102,12 @@ public void keyReleased() {
 /*   LVL FUNCTIONS   */
 /*********************/
 void draw_level() {
+  println("draw lvl");
   stroke(100);
-  strokeWeight(10);
+  strokeWeight(20);
   
   switch(lvl) {
-    // carré
+    // diagonal
     case 0:
       x = 100;
       y = 100;
@@ -113,14 +115,15 @@ void draw_level() {
       line(100, 100, 200, 200);
       
       stroke(-3643901);
-      strokeWeight(15);
+      strokeWeight(25);
       point(200,200);
       break;
       
-    // maison
+    // "house"
     case 1:
       x = 100;
       y = 500;
+      
       background(0);
       
       line(100, 500, 700, 500);  // 1
@@ -137,57 +140,50 @@ void draw_level() {
       point(700, 200);
       break;
       
-    // cercle
+    // circle
     case 2 : 
       break;
-    // infini
+    // infinite
     case 3 :
       break;
   }
+  
+  drawlvl = false;
 }
 
 void verif_pixel() {
-  loadPixels();
-  int myColor = pixels[win_w * (y+4) + x+4];
-
-  println(myColor);
   
-  if(myColor == -3643901) {
-    // timeout
-    // msg bravo
-    state = 2;  // gagné
-    // fill background
+  color myColor = get(x,y);
+  
+  if(tmp != myColor) {
+    tmp = myColor;
+    println("x = "+x);
+    println("y = "+y);
+    println("myColor = "+myColor);
   }
-  else if(myColor != 100 && myColor != 255) {
-    state = 1; // perdu
-    // background rouge
-    // afficher perdu
-    // pause 5 secondes
+  
+  if(myColor == orange) {  // win
+    println("GAGNE");
+    lvl++;
+    
+    textFont(font, 25);
+    fill(255);
+    text("Lvl "+lvl+" complete !", 100,100);
+    text("Press any key to continue", 100,150);
+    
+    drawlvl = true;
   }
-}
-
-
-
-
-
-void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) {
-
-  noFill();
-
-  if (axis == Y_AXIS) {  // Top to bottom gradient
-    for (int i = y; i <= y+h; i++) {
-      float inter = map(i, y, y+h, 0, 1);
-      color c = lerpColor(c1, c2, inter);
-      stroke(c);
-      line(x, i, x+w, i);
-    }
-  }  
-  else if (axis == X_AXIS) {  // Left to right gradient
-    for (int i = x; i <= x+w; i++) {
-      float inter = map(i, x, x+w, 0, 1);
-      color c = lerpColor(c1, c2, inter);
-      stroke(c);
-      line(i, y, i, y+h);
-    }
+  else if(myColor == background) {  // loose
+    println("PERDU");
+    
+    background(0, 0, 130);
+    
+    textFont(font, 25);
+    fill(255);
+    text("Game over", 100, 100);
+    text("Please wait, system will restart.", 100, 150);
+    text("Press any key to continue", 100, 200);
+    
+    drawlvl = true;
   }
 }

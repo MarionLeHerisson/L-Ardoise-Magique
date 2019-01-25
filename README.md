@@ -10,5 +10,9 @@ Les deux joueurs disposent chacun d'un variateur, l'un contrôle la direction ve
 (Attention, ceci n'est pas la version finale !)
 - Flèches haut/bas pour l'axe vertical
 - Flèches droite/gauche pour l'axe horizontal
+- Q pour quitter
+- A et Z pour cliquer
+
+-> Dans la version finale, un bouton rotatif & cliquable remplacera les touches LEFT, RIGHT, A ; un second bouton remplacera les touches UP, DOWN, Z.
 
 **Bisous.**

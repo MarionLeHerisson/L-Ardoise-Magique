@@ -34,7 +34,8 @@ void setup() {
   background = color(-3355444);
   bsod       = color(-16777086);
   pattern    = color(-10197916);
-  players    = color(-3145624);
+  //players    = color(-3145624);
+  players    = color(255);
 
   create_rand_background();
   
@@ -260,27 +261,39 @@ void draw_level() {
     line(100, 200, 400, 100);  // 7
     line(400, 100, 700, 200);  // 8
 
-    draw_arrival(700, 200);
+    draw_arrival(700, 200);    // Real arrival
+    //draw_arrival(100, 400);    // Easier debug arrival
     break;
 
-    // circle
+    // ellipse
   case 2 : 
     x = 300;
-    y = 200;
-
-    ellipse(300, 300, 100, 100);
-
-    stroke(background);
-    strokeWeight(3);
-    point(297, 203);
-
-    draw_arrival(290, 210);
+    y = 375;
+    
+    noFill();
+    ellipse(400,400,200,300);
+    
+    fill(background);
+    noStroke();
+    rect(290, 400, 30, 15);
+    
+    draw_arrival(302, 415);
+    //draw_arrival(300, 360);    // Easier debug arrival
     break;
-    // infinite
+    
+    // Free drawing
   case 3 :
-    bezier(x, y, 350, 215, 350, 385, x, y);
-
-    //draw_arrival(300, 300);
+    x = 100;
+    y = 100;
+    
+    background(pattern);
+    
+    textFont(font, 25);
+    fill(255);
+    text("Free drawing time \\o/", 250, 100);
+    
+    draw_arrival(20, 20);
+    
     break;
   }
 

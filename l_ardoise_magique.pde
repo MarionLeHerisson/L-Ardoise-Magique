@@ -5,8 +5,8 @@ int score = 0;
 int state = 0;      // 0 = playing, 1 = win, 2 = loose
 int lvl;            // current drawing level
 
-Boolean delay = false;
-Boolean drawlvl = true;
+Boolean delay     = false;
+Boolean drawlvl   = true;
 Boolean show_menu;
 
 PFont font;
@@ -15,6 +15,7 @@ int x = 4, y = 4;    // cursor coordonates
 
 boolean[] CKEYS;
 int[] copy;
+int[] rand_bkgd;
 
 color orange, background, bsod, pattern, players;
 
@@ -22,8 +23,9 @@ void setup() {
   frameRate(60);
   size(800, 800);  // window size
   
-  CKEYS = new boolean[255];
-  copy  = new int[width * height];
+  CKEYS     = new boolean[255];
+  copy      = new int[width * height];
+  rand_bkgd = new int[width * height];
 
   font = createFont("Source Code Pro", 16, true);
 
@@ -34,6 +36,8 @@ void setup() {
   pattern    = color(-10197916);
   players    = color(-3145624);
 
+  create_rand_background();
+  
   restart();
 }
 
@@ -41,13 +45,11 @@ void draw() {
   get_input();
   
   display_copy();
-  
   if(show_menu) {
     menu();
   } else {
     verif_pixel();
     draw_players();
-    save_copy();
   }
   
   save_copy();
@@ -59,26 +61,60 @@ void draw() {
 /*  MENU FUNCTIONS   */
 /*********************/
 void menu() {
-  textFont(font, 25);      // Menu message
+  println("menu");
+  
+  display_rand_background();
+  
+  textFont(font, 50);      // Menu message
   fill(255);
-  text("Welcome !", 100, 100);
+  text("Welcome !", 150, 100);
 
   noStroke();              // Draw buttons
   fill(bsod);
-  rect(100, 200, 500, 300);
+  rect(150, 200, 500, 100);
 
+  textFont(font, 25);
   fill(255);
-  text("Welcome !", 200, 150);
+  text("Click here to begin", 250, 250);
 
   draw_cursor();
   
-  draw_level();          // On click on a button
+  if((CKEYS[65] || CKEYS[90]) && 
+      x > 150 && x < 650 &&
+      y > 200 && y < 300) {
+    draw_level();
+  }
 }
 
 void restart() {
   println("restart");
   lvl = 0;
   show_menu = true;
+}
+
+void create_rand_background() {
+  for(int i = 0; i < width * height; i++) {
+    rand_bkgd[i] = color(random(255), random(255), random(255));
+  }
+}
+
+void display_rand_background() {
+  loadPixels();
+  int i, j;
+  color c;
+  for (int w = 0; w < 10000; w++) {
+    i = int(random(rand_bkgd.length));
+    j = int(random(i, rand_bkgd.length));
+    if ( j < rand_bkgd.length && i < rand_bkgd.length && rand_bkgd[i] > rand_bkgd[j] ) {
+      c = rand_bkgd[i];
+      rand_bkgd[i] = rand_bkgd[j];
+      rand_bkgd[j] = c;
+    }
+  }
+  for(int w = 0; w < width * height; w++) {
+    pixels[w] = rand_bkgd[w];
+  }
+  updatePixels();
 }
 
 /*********************/
@@ -158,10 +194,10 @@ public void keyReleased() {
   } else if (key != CODED && keyCode <255) {
     switch(key) {
     case 'a':
-      CKEYS[keyCode] = true;              // P1 unclicks
+      CKEYS[keyCode] = false;              // P1 unclicks
       break;
     case 'z' :
-      CKEYS[keyCode] = true;              // P2 unclicks
+      CKEYS[keyCode] = false;              // P2 unclicks
       break;
     }
   }
